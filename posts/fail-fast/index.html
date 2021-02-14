@@ -20,24 +20,25 @@
 <main id="content">
 <article>
     <header id="post-header">
-        <h1>Software Circuit Breakers</h1><time>February 14, 2021</time></header><p>I don&rsquo;t think this is a controversial opinion, but it&rsquo;s the one I find myself repeating the most often, so I&rsquo;m putting it here for reference.</p>
+        <h1>Software Circuit Breakers</h1><time>February 14, 2021</time></header><p>I don&rsquo;t think this is a controversial opinion, but it&rsquo;s the one I find myself repeating most often, so I&rsquo;m putting it here for reference.</p>
 <p>One the most common anti-patterns in software development is something that looks like this:</p>
 <pre><code>val tribble = getTribble(id)
 if (tribble == null)
   return
 </code></pre><p>In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</p>
 <h1 id="what-is-null">What is <code>null</code>?</h1>
-<p>First what is a <code>null</code> Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses <code>null</code> to represent the absence of a thing. From the perspective of <code>getTribble()</code> this is an error, since it&rsquo;s only purpose is to return a tribble. <code>tribble == null</code> is essentially short for <code>ERROR_NO_TRIBBLE_FOUND</code>.</p>
+<p>First what is a <code>null</code> Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses <code>null</code> to represent the absence of a thing. From the perspective of <code>getTribble()</code> this is an error, since its only purpose is to return a tribble. <code>tribble == null</code> is essentially short for <code>ERROR_NO_TRIBBLE_FOUND</code>.</p>
 <h1 id="types-of-errors">Types of Errors</h1>
 <p>When thinking about error handling I find it useful to split errors into two categories: recoverable, and non-recoverable <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. There’s “Hey something came up, but we kinda foresaw this, so here’s how we’re going to make it right”, and then there’s “The server got hit by lightning”. Where exactly to draw this line is debatable but for my purposes here, I consider non-recoverable means “There is no sensible way to proceed at this time” (non-recoverable does not mean non-retryable)</p>
-<p>Depending on context if <code>ERROR_NO_TRIBBLE_FOUND</code> is considered recoverable then we might be ok here. The function returns <code>ERROR_NO_TRIBBLE_FOUND</code> and the caller says “Oh, ok. <code>makeNewTribble()</code>”.  If the error is non-recoverable however the code above can be very insidious. Maybe a Tribble <em>has</em> to exist in this state, and its absence suggests something very unexpected. We may have arrived here because of programming error, maybe network error, or maybe the server was hit by lightning.</p>
+<p>Depending on context, if <code>ERROR_NO_TRIBBLE_FOUND</code> is considered recoverable then we might be ok here. The function returns <code>ERROR_NO_TRIBBLE_FOUND</code> and the caller says “Oh, ok. <code>makeNewTribble()</code>”.</p>
+<p>If the error is non-recoverable however the code above can be very insidious. Maybe a Tribble <em>has</em> to exist in this state, and its absence suggests something very unexpected. We may have arrived here because of programming error, maybe network error, or maybe the server was hit by lightning.</p>
 <h1 id="the-worst-type-of-bug">The Worst Type of Bug</h1>
 <p>Now consider the example in this context:</p>
 <pre><code>fun assignTribbleToShip(id: String) {
   val tribble = getTribble(id)
   if (tribble == null)
     return
-  getShip().tribbles += tribble
+  findShip().tribbles += tribble
 }
 </code></pre><p>This is where things start to get ugly. We called <code>assignTribbleToShip</code>, but the error <code>ERROR_NO_TRIBBLE_FOUND</code>, has been ignored. We think the tribble was assigned to our ship, but that is not true. Let&rsquo;s add more context:</p>
 <pre><code>fun assignTribbleApi(id: String): HttpResponse {
@@ -54,7 +55,7 @@ if (tribble == null)
 </code></pre><p>or better yet:</p>
 <pre><code>getTribble(id) ?: throw NotFound(“No tribble $id”)
 </code></pre><p>Throw <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>. We fail immediately, at the first sign of trouble. We simply see <code>ERROR_NO_TRIBBLE_FOUND</code> error, and declare &ldquo;This is unrecoverable!&rdquo;. Throw up our arms and say &ldquo;I give up!&rdquo;.</p>
-<p>I was first exposed to this idea in <a href="https://en.wikipedia.org/wiki/The_Art_of_Unix_Programming">&ldquo;The Art of Unix Programming&rdquo;</a>. It is a Rule in <a href="https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html">Unix Philosophy</a> known as:</p>
+<p>I was first exposed to this idea in <a href="https://en.wikipedia.org/wiki/The_Art_of_Unix_Programming">The Art of Unix Programming</a>. It is a Rule in <a href="https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html">Unix Philosophy</a> known as:</p>
 <blockquote>
 <p>Rule of Repair: When you must fail, fail noisily and as soon as possible.</p>
 </blockquote>
@@ -62,7 +63,7 @@ if (tribble == null)
 <p>A good physical metaphor for this is a circuit breaker. If the amount of current entering the system is more than can be handled, immediately fail off. Is it annoying? Yes, but it stopped our system from continuing, possibly causing more damage.</p>
 <p>This is a concept that is also at the heart of the <a href="https://www.erlang.org/">Erlang Programming Language</a>, and the <a href="https://en.wikipedia.org/wiki/Actor_model">Actor Model</a>. Erlang has a pretty good track record for high availability, it runs a lot of the world&rsquo;s telecommunication networks! When was the last time you can remember phone lines being down?</p>
 <h1 id="eating-your-cake-too">Eating your Cake too</h1>
-<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error, the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
+<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally, if your program is in a weird state and throws an error, the best strategy is to retry. &ldquo;Have you tried turning it off and on again?&rdquo;. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
 <p>The supervisor mechanism is another page from Erlang and Actors, but it&rsquo;s an idea that has naturally taken root everywhere you look. Your server framework may have an unhandled exception handler that triggers retry, your clients may retry on 500, if your application process crashes there is probably a daemon manager that will retry the process. In the end if all those things don&rsquo;t work there&rsquo;s a good chance a human will come along and retry.</p>
 <h1 id="why-we-do-the-wrong-thing-and-how-to-stop">Why we do the Wrong Thing, and How to Stop</h1>
 <p>I believe there are a couple reasons behind the &ldquo;<code>if null return</code>&rdquo; anti-pattern and all of them are very human.</p>
