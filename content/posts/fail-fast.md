@@ -12,7 +12,7 @@ val tribble = getTribble(id)
 if (tribble == null)
   return
 ```
-In some contexts this type code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!
+In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!
 
 # What is `null`?
 First what is a `null` Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses `null` to represent the absence of a thing. From the perspective of `getTribble()` this is an error, since it's only purpose is to return a tribble. `tribble == null` is essentially short for `ERROR_NO_TRIBBLE_FOUND`. 
@@ -74,7 +74,7 @@ A good physical metaphor for this is a circuit breaker. If the amount of current
 This is a concept that is also at the heart of the [Erlang Programming Language](https://www.erlang.org/), and the [Actor Model](https://en.wikipedia.org/wiki/Actor_model). Erlang has a pretty good track record for high availability, it runs a lot of the world's telecommunication networks! When was the last time you can remember phone lines being down?
 
 # Eating your Cake too
-The best part of this pattern is when combined with higher level "supervisor" functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can. 
+The best part of this pattern is when combined with higher level "supervisor" functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error, the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can. 
 
 The supervisor mechanism is another page from Erlang and Actors, but it's an idea that has naturally taken root everywhere you look. Your server framework may have an unhandled exception handler that triggers retry, your clients may retry on 500, if your application process crashes there is probably a daemon manager that will retry the process. In the end if all those things don't work there's a good chance a human will come along and retry.
 
