@@ -4,7 +4,7 @@ date: 2021-02-14
 draft: false
 ---
 
-I don't think this is a controversial opinion, but it's the one I find myself repeating the most often, so I'm putting it here for reference. 
+I don't think this is a controversial opinion, but it's the one I find myself repeating most often, so I'm putting it here for reference. 
 
 One the most common anti-patterns in software development is something that looks like this: 
 ```
@@ -15,14 +15,16 @@ if (tribble == null)
 In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!
 
 # What is `null`?
-First what is a `null` Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses `null` to represent the absence of a thing. From the perspective of `getTribble()` this is an error, since it's only purpose is to return a tribble. `tribble == null` is essentially short for `ERROR_NO_TRIBBLE_FOUND`. 
+First what is a `null` Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses `null` to represent the absence of a thing. From the perspective of `getTribble()` this is an error, since its only purpose is to return a tribble. `tribble == null` is essentially short for `ERROR_NO_TRIBBLE_FOUND`. 
 
 # Types of Errors
 When thinking about error handling I find it useful to split errors into two categories: recoverable, and non-recoverable [^note-on-rust]. There’s “Hey something came up, but we kinda foresaw this, so here’s how we’re going to make it right”, and then there’s “The server got hit by lightning”. Where exactly to draw this line is debatable but for my purposes here, I consider non-recoverable means “There is no sensible way to proceed at this time” (non-recoverable does not mean non-retryable)
 
 [^note-on-rust]: Rust makes this exact distinction in its [error handling](https://doc.rust-lang.org/book/ch09-00-error-handling.html)
 
-Depending on context if `ERROR_NO_TRIBBLE_FOUND` is considered recoverable then we might be ok here. The function returns `ERROR_NO_TRIBBLE_FOUND` and the caller says “Oh, ok. `makeNewTribble()`”.  If the error is non-recoverable however the code above can be very insidious. Maybe a Tribble *has* to exist in this state, and its absence suggests something very unexpected. We may have arrived here because of programming error, maybe network error, or maybe the server was hit by lightning.
+Depending on context, if `ERROR_NO_TRIBBLE_FOUND` is considered recoverable then we might be ok here. The function returns `ERROR_NO_TRIBBLE_FOUND` and the caller says “Oh, ok. `makeNewTribble()`”. 
+
+If the error is non-recoverable however the code above can be very insidious. Maybe a Tribble *has* to exist in this state, and its absence suggests something very unexpected. We may have arrived here because of programming error, maybe network error, or maybe the server was hit by lightning.
 
 # The Worst Type of Bug
 Now consider the example in this context:
@@ -31,7 +33,7 @@ fun assignTribbleToShip(id: String) {
   val tribble = getTribble(id)
   if (tribble == null)
     return
-  getShip().tribbles += tribble
+  findShip().tribbles += tribble
 }
 ```
 
@@ -63,7 +65,7 @@ Throw [^exceptions-note]. We fail immediately, at the first sign of trouble. We 
 
 [^exceptions-note]: There's a lot of debate about whether exceptions are net good or bad. There are good points on both sides, but use-cases like this are when I find them very valuable.
 
-I was first exposed to this idea in ["The Art of Unix Programming"](https://en.wikipedia.org/wiki/The_Art_of_Unix_Programming). It is a Rule in [Unix Philosophy](https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html) known as:
+I was first exposed to this idea in [The Art of Unix Programming](https://en.wikipedia.org/wiki/The_Art_of_Unix_Programming). It is a Rule in [Unix Philosophy](https://homepage.cs.uri.edu/~thenry/resources/unix_art/ch01s06.html) known as:
 
 > Rule of Repair: When you must fail, fail noisily and as soon as possible.
 
@@ -74,7 +76,7 @@ A good physical metaphor for this is a circuit breaker. If the amount of current
 This is a concept that is also at the heart of the [Erlang Programming Language](https://www.erlang.org/), and the [Actor Model](https://en.wikipedia.org/wiki/Actor_model). Erlang has a pretty good track record for high availability, it runs a lot of the world's telecommunication networks! When was the last time you can remember phone lines being down?
 
 # Eating your Cake too
-The best part of this pattern is when combined with higher level "supervisor" functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error, the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can. 
+The best part of this pattern is when combined with higher level "supervisor" functions you can still immediately fail, but potentially recover. Naturally, if your program is in a weird state and throws an error, the best strategy is to retry. "Have you tried turning it off and on again?". Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can. 
 
 The supervisor mechanism is another page from Erlang and Actors, but it's an idea that has naturally taken root everywhere you look. Your server framework may have an unhandled exception handler that triggers retry, your clients may retry on 500, if your application process crashes there is probably a daemon manager that will retry the process. In the end if all those things don't work there's a good chance a human will come along and retry.
 
