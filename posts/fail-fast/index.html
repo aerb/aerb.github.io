@@ -25,7 +25,7 @@
 <pre><code>val tribble = getTribble(id)
 if (tribble == null)
   return
-</code></pre><p>In some contexts this type code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</p>
+</code></pre><p>In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</p>
 <h1 id="what-is-null">What is <code>null</code>?</h1>
 <p>First what is a <code>null</code> Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses <code>null</code> to represent the absence of a thing. From the perspective of <code>getTribble()</code> this is an error, since it&rsquo;s only purpose is to return a tribble. <code>tribble == null</code> is essentially short for <code>ERROR_NO_TRIBBLE_FOUND</code>.</p>
 <h1 id="types-of-errors">Types of Errors</h1>
@@ -62,7 +62,7 @@ if (tribble == null)
 <p>A good physical metaphor for this is a circuit breaker. If the amount of current entering the system is more than can be handled, immediately fail off. Is it annoying? Yes, but it stopped our system from continuing, possibly causing more damage.</p>
 <p>This is a concept that is also at the heart of the <a href="https://www.erlang.org/">Erlang Programming Language</a>, and the <a href="https://en.wikipedia.org/wiki/Actor_model">Actor Model</a>. Erlang has a pretty good track record for high availability, it runs a lot of the world&rsquo;s telecommunication networks! When was the last time you can remember phone lines being down?</p>
 <h1 id="eating-your-cake-too">Eating your Cake too</h1>
-<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
+<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally if your program is in a weird state and throws an error, the best strategy is to retry. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
 <p>The supervisor mechanism is another page from Erlang and Actors, but it&rsquo;s an idea that has naturally taken root everywhere you look. Your server framework may have an unhandled exception handler that triggers retry, your clients may retry on 500, if your application process crashes there is probably a daemon manager that will retry the process. In the end if all those things don&rsquo;t work there&rsquo;s a good chance a human will come along and retry.</p>
 <h1 id="why-we-do-the-wrong-thing-and-how-to-stop">Why we do the Wrong Thing, and How to Stop</h1>
 <p>I believe there are a couple reasons behind the &ldquo;<code>if null return</code>&rdquo; anti-pattern and all of them are very human.</p>

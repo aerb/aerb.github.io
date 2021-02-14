@@ -19,7 +19,7 @@
       <guid>https://aerb.github.io/posts/fail-fast/</guid>
       <description>I don&amp;rsquo;t think this is a controversial opinion, but it&amp;rsquo;s the one I find myself repeating the most often, so I&amp;rsquo;m putting it here for reference.
 One the most common anti-patterns in software development is something that looks like this:
-val tribble = getTribble(id) if (tribble == null) return In some contexts this type code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</description>
+val tribble = getTribble(id) if (tribble == null) return In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</description>
     </item>
 
 
