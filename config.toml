@@ -1,0 +1,4 @@
+baseURL = "https://aerb.github.io/"
+languageCode = "en-us"
+title = "computer says no"
+theme = "etch"
