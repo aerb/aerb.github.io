@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on computer says no</title>
+    <link>http://example.org/tags/</link>
+    <description>Recent content in Tags on computer says no</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+
+	<atom:link href="http://example.org/tags/index.xml" rel="self" type="application/rss+xml" />
+
+
+
+    <item>
+      <title>Software Circuit Breakers</title>
+      <link>http://example.org/posts/fail-fast/</link>
+      <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
+
+      <guid>http://example.org/posts/fail-fast/</guid>
+      <description>I don&amp;rsquo;t think this is a controversial opinion, but the one I find myself repeating the most often, so I&amp;rsquo;m putting it here fore reference.
+One the most common anti-patterns in software development is something that looks like this:
+val tribble = getTribble(id) if (tribble == null) return In some contexts this type code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</description>
+    </item>
+
+
+  </channel>
+</rss>
