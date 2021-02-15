@@ -17,9 +17,9 @@
       <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
 
       <guid>https://aerb.github.io/posts/software-circuit-breakers/</guid>
-      <description>I don&amp;rsquo;t think this is a controversial opinion, but it&amp;rsquo;s the one I find myself repeating most often, so I&amp;rsquo;m putting it here for reference.
-One the most common anti-patterns in software development is something that looks like this:
-val tribble = getTribble(id) if (tribble == null) return In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!</description>
+      <description>One of the most common anti-patterns in software development is something that looks like this:
+val tribble = getTribble(id) if (tribble == null) return In some contexts this type of code is fine, but in most it is not. It is a silent failure, which is the worst type of failure!
+What is null? First what is a null Tribble? While Kotlin certainly supports richer ways of communicating errors, it comes from the tradition of Java and C, so usually uses null to represent the absence of a thing.</description>
     </item>
 
 

@@ -20,8 +20,7 @@
 <main id="content">
 <article>
     <header id="post-header">
-        <h1>Software Circuit Breakers</h1><time>February 14, 2021</time></header><p>I don&rsquo;t think this is a controversial opinion, but it&rsquo;s the one I find myself repeating most often, so I&rsquo;m putting it here for reference.</p>
-<p>One the most common anti-patterns in software development is something that looks like this:</p>
+        <h1>Software Circuit Breakers</h1><time>February 14, 2021</time></header><p>One of the most common anti-patterns in software development is something that looks like this:</p>
 <pre><code>val tribble = getTribble(id)
 if (tribble == null)
   return
@@ -63,7 +62,7 @@ if (tribble == null)
 <p>A good physical metaphor for this is a circuit breaker. If the amount of current entering the system is more than can be handled, immediately fail off. Is it annoying? Yes, but it stopped our system from continuing, possibly causing more damage.</p>
 <p>This is a concept that is also at the heart of the <a href="https://www.erlang.org/">Erlang Programming Language</a>, and the <a href="https://en.wikipedia.org/wiki/Actor_model">Actor Model</a>. Erlang has a pretty good track record for high availability, it runs a lot of the world&rsquo;s telecommunication networks! When was the last time you can remember phone lines being down?</p>
 <h1 id="eating-your-cake-too">Eating your Cake too</h1>
-<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally, if your program is in a weird state and throws an error, the best strategy is to retry. &ldquo;Have you tried turning it off and on again?&rdquo;. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
+<p>The best part of this pattern is when combined with higher level &ldquo;supervisor&rdquo; functions you can still immediately fail, but potentially recover. Naturally, if your program is in a weird state and throws an error, the best strategy is to retry <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>. &ldquo;Have you tried turning it off and on again?&rdquo;. Depending on the error sometimes this will work, sometimes not, but it gives the system a chance to self heal if it can.</p>
 <p>The supervisor mechanism is another page from Erlang and Actors, but it&rsquo;s an idea that has naturally taken root everywhere you look. Your server framework may have an unhandled exception handler that triggers retry, your clients may retry on 500, if your application process crashes there is probably a daemon manager that will retry the process. In the end if all those things don&rsquo;t work there&rsquo;s a good chance a human will come along and retry.</p>
 <h1 id="why-we-do-the-wrong-thing-and-how-to-stop">Why we do the Wrong Thing, and How to Stop</h1>
 <p>I believe there are a couple reasons behind the &ldquo;<code>if null return</code>&rdquo; anti-pattern and all of them are very human.</p>
@@ -72,7 +71,7 @@ if (tribble == null)
 <p>These are completely valid concerns. The good news is you can avoid them with &hellip;</p>
 <h1 id="feature-flags">Feature Flags</h1>
 <p>Feature Flags are amazing. You can make your changes behind a flag, fail as pedantically / loudly as you want, and immediately revert if you are starting to see serious problems. This allows your application to be strict and error tolerant, but revertible if that strictness is causing blocking problems.</p>
-<p>I’ve used <a href="https://launchdarkly.com/">LaunchDarkly</a> and have no complaints. If you don&rsquo;t have a budget, you can probably roll your own without much work. You basically just want a remote way to enable / disable code paths. <sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup></p>
+<p>I’ve used <a href="https://launchdarkly.com/">LaunchDarkly</a> and have no complaints. If you don&rsquo;t have a budget, you can probably roll your own without much work. You basically just want a remote way to enable / disable code paths. <sup id="fnref:4"><a href="#fn:4" class="footnote-ref" role="doc-noteref">4</a></sup></p>
 <h1 id="final-thoughts">Final Thoughts</h1>
 <p>Problems tend to beget more problems. Ignoring signs that something is wrong typically allows those problems to take root and become worse. In programming languages that support it, you should feel comfortable to <code>throw</code> and <code>throw</code> often. <code>Exception</code>s are your friend, they tell you when something is wrong before more serious problems start to manifest.</p>
 <section class="footnotes" role="doc-endnotes">
@@ -85,7 +84,10 @@ if (tribble == null)
 <p>There&rsquo;s a lot of debate about whether exceptions are net good or bad. There are good points on both sides, but use-cases like this are when I find them very valuable. <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:3" role="doc-endnote">
-<p><em>Please</em> cleanup old flags once you&rsquo;ve verified there are no problems. <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>Everything should be <a href="https://stackoverflow.com/a/1077421">idempotent</a> for this to work. Basically, retry safe. <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:4" role="doc-endnote">
+<p><em>Please</em> cleanup old flags once you&rsquo;ve verified there are no problems. <a href="#fnref:4" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </section>
