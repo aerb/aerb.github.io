@@ -6,7 +6,7 @@
     <description>Recent content on computer says no</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Feb 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 28 Feb 2021 00:00:00 +0000</lastBuildDate>
 
 	<atom:link href="https://aerb.github.io/index.xml" rel="self" type="application/rss+xml" />
 
@@ -15,7 +15,7 @@
     <item>
       <title>We Need Better than Gradle</title>
       <link>https://aerb.github.io/posts/we-need-better-than-gradle/</link>
-      <pubDate>Mon, 15 Feb 2021 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 28 Feb 2021 00:00:00 +0000</pubDate>
 
       <guid>https://aerb.github.io/posts/we-need-better-than-gradle/</guid>
       <description>While coding professionally I&amp;rsquo;ve used Gradle, Maven, and Ant. I think Gradle is my least favorite.
