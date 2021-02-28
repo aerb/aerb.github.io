@@ -30,20 +30,20 @@ We also have one git repository per service, no monorepo, so naturally have some
 
 So how do we update our `build.gradle` with new dependencies?
 
-Ultimately we need to be able to understand groovy. We don't want to write a full-blown interpreter, so we support a subset of what we need to understand in the Gradle DSL. In our case we enforce a convention where each project declares is dependencies in a `dependencies.gradle` file that is simple enough for dumb parsers to understand and modify. 
+Ultimately we need to be able to understand groovy. We don't want to write a full-blown interpreter, so we support a subset of what we need to understand in the Gradle DSL. In our case we enforce a convention where each project declares its dependencies in a `dependencies.gradle` file that is simple enough for dumb parsers to understand and modify. 
 
-With this convention we have gone full circle! We didn't like declarative builds because they weren't flexible enough, so we moved to Gradle, which is really just Groovy. But now we can't understand what Gradle builds are doing, because the underlying language is too complex for dumb parsers. So we introduce an ad-hoc declarative style.
+With this convention we have come full circle! We didn't like declarative builds because they weren't flexible enough, so we moved to Gradle, which is really just Groovy. But now we can't understand what Gradle builds are doing, because the underlying language is too complex for dumb parsers. So we introduce an ad-hoc declarative style.
 
-In the end Gradle enforces very little, there is some convention, but you can really do what ever you want, so gods know what is happening in those hundreds of Gradle files.
+In the end Gradle enforces very little. There is some convention, but you can really do what ever you want, so gods know what is happening in those hundreds of Gradle files.
 
 # Migrating an Organization
-There's another thing we've been working on lately. Gradle now has a [Kotlin script](https://docs.gradle.org/current/userguide/kotlin_dsl.html) variation of it's DSL[^note-on-dsl]. Our company is heavily using Kotlin now, so a developer has been working on a script to migrate the hundreds of projects to the `build.gradle.kts` format. I agree with this migration. We all use Kotlin, so switching the format will give us more comfort and ease in maintaining those builds. It's how this migration is happening that made my jaw drop. 
+There's another thing we've been working on lately. Gradle now has a [Kotlin](https://docs.gradle.org/current/userguide/kotlin_dsl.html) variation of it's DSL[^note-on-dsl]. Our company is heavily using Kotlin now, so a developer has been working on a script to migrate the hundreds of projects to the `build.gradle.kts` format. I agree with this migration. We all use Kotlin, so switching the format will give us more comfort and ease in maintaining those builds. It's how this migration is happening that made my jaw drop. 
 
 [^note-on-dsl]: The Kotlin DSL is pretty great, and definitely an improvement, but yet another example of Gradle throwing in yet another way to do things and further splintering the knowledge base.
 
 In the end everything is just Groovy, and there is no great Groovy to Kotlin converter available, so the present migration strategy is basically: run a bunch of regexes against the `build.gradle` to optimistically search and replace Groovy with Kotlin syntax. **A human** then needs to come in and fix the final n% of things that didn't convert properly. On hundreds of projects.
 
-This is insane. For any organization that is trying to build an automated system for updating and running migrations on hundreds (if not thousands) of projects, it is insane that our best option is use `grep` and cross our fingers. This is not the first migration we have done, and will not be our last, and the number of projects is only going to increase.
+This is insane. For any organization that is trying to build an automated system for updating and migrating hundreds (if not thousands) of projects, it is insane that our best option is use `grep` and cross our fingers. This is not the first migration we have done, and will not be our last, and the number of projects is only going to increase.
 
 # We Need Better
 We are a professional community that naturally values structured data and automation. Using Gradle effectively and ironically breaks both these things. We need to do better. So what does that "better" look like?  
@@ -75,7 +75,7 @@ For my build tool and language I want something that has these properties:
 
 3) An accessible and rich plugin and lifecycle API. Maybe one of the mistakes of Maven was it was too strict, and that led to Gradle. Let's try to meet in the middle.
 
-3) Support rich documentation. This is where XML is especially brutal. What if we could click on the argument of a plugin-in, and IntelliJ would bring us to well-formatted documentation. 😍. 
+3) Support rich documentation. This is where XML is especially brutal. What if we could click on the argument of a plugin, and IntelliJ would bring us to well-formatted documentation. 😍. 
 
 4) No meaningful whitespace please. We should have learned this was a bad idea a long time ago.
 
