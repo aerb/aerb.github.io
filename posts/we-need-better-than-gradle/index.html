@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="https://aerb.github.io/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.min.css">
+
+    <title>We Need Better than Gradle</title>
+</head>
+<body><header id="banner">
+    <h2><a href="https://aerb.github.io/">computer says no</a></h2>
+    <nav>
+        <ul>
+
+        </ul>
+    </nav>
+</header>
+<main id="content">
+<article>
+    <header id="post-header">
+        <h1>We Need Better than Gradle</h1><time>February 15, 2021</time></header><p>While coding professionally I&rsquo;ve used Gradle, Maven, and Ant. I think Gradle is my least favorite.</p>
+<p>There have been a couple good critiques of Gradle that I&rsquo;ve read lately. I want to note them here for completeness, but then move on to outline my own frustrations which come from a different angle.</p>
+<p>First there is <a href="https://www.bruceeckel.com/2021/01/02/the-problem-with-gradle/">this</a> article by Bruce Eckel. The central argument really spoke to me and got me thinking about this topic. In the post Bruce states:</p>
+<blockquote>
+<p>To do anything [in Gradle] you have to know everything</p>
+</blockquote>
+<p>This has been my experience and frustration as well, and is not typically a sign you are using a good tool.</p>
+<p>In the second <a href="https://phauer.com/2018/moving-back-from-gradle-to-maven/">article</a>, Philipp Hauer writes about (amongst other things) the unnessisary churn Gradle causes by regularly <a href="https://docs.gradle.org/current/userguide/upgrading_version_5.html#dependencies_should_no_longer_be_declared_using_the_compile_and_runtime_configurations">breaking compatibility</a>, in addition to the confusing and opaque rules of the DSL.</p>
+<p>Again, 100% agree here. I will also note Gradle constantly <a href="https://github.com/gradle/performance-comparisons/blob/e174b35fcd9aef362f8062fe08443870ce2061da/exclude-merging/apiweb/dependencies.gradle#L4">offering</a> <a href="https://github.com/gradle/performance-comparisons/blob/e174b35fcd9aef362f8062fe08443870ce2061da/exclude-merging/apiServiceLayer/dependencies.gradle#L6">multiple</a> <a href="https://github.com/gradle/build-analysis-demo/blob/4aaac6d82f2dc4bd1e9a7825d420c1b32856f789/build-producerator/build.gradle.kts#L8">ways</a> to do the same thing does not help here :~).</p>
+<p>These are both great articles. They&rsquo;ve made a case I find compelling, and are worth a read, but I&rsquo;m not going to dive any deeper into those topics. I just want to make them visible, and will now move on.</p>
+<p>I want to focus on Gradle from the perspective of a large organization, and how it is a terrible build tool for maintaining numerous projects.</p>
+<h1 id="gradle-at-scale">Gradle at Scale</h1>
+<p>The company I work for uses Gradle heavily now for our builds. We have been migrating to a microservice world for a while now, so have an ecosystem of, I wanna say, a couple hundred services and libraries. All of these services and libraries have at least one - but usually two - Gradle builds, so the total number is roughly 2x that.</p>
+<p>We also have one git repository per service, no monorepo, so naturally have some jobs that do care-taking. Bump dependencies, enforce formatting rules, perform small migrations, etc. Gradle is horrible for this type of automation.</p>
+<h1 id="what-is-old-becomes-new-again">What is Old Becomes New Again</h1>
+<p>So how do we update our <code>build.gradle</code> with new dependencies?</p>
+<p>Ultimately we need to be able to understand groovy. We don&rsquo;t want to write a full-blown interpreter, so we support a subset of what we need to understand in the Gradle DSL. In our case we enforce a convention where each project declares is dependencies in a <code>dependencies.gradle</code> file that is simple enough for dumb parsers to understand and modify.</p>
+<p>With this convention we have gone full circle! We didn&rsquo;t like declarative builds because they weren&rsquo;t flexible enough, so we moved to Gradle, which is really just Groovy. But now we can&rsquo;t understand what Gradle builds are doing, because the underlying language is too complex for dumb parsers. So we introduce an ad-hoc declarative style.</p>
+<p>In the end Gradle enforces very little, there is some convention, but you can really do what ever you want, so gods know what is happening in those hundreds of Gradle files.</p>
+<h1 id="migrating-an-organization">Migrating an Organization</h1>
+<p>There&rsquo;s another thing we&rsquo;ve been working on lately. Gradle now has a <a href="https://docs.gradle.org/current/userguide/kotlin_dsl.html">Kotlin script</a> variation of it&rsquo;s DSL<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. Our company is heavily using Kotlin now, so a developer has been working on a script to migrate the hundreds of projects to the <code>build.gradle.kts</code> format. I agree with this migration. We all use Kotlin, so switching the format will give us more comfort and ease in maintaining those builds. It&rsquo;s how this migration is happening that made my jaw drop.</p>
+<p>In the end everything is just Groovy, and there is no great Groovy to Kotlin converter available, so the present migration strategy is basically: run a bunch of regexes against the <code>build.gradle</code> to optimistically search and replace Groovy with Kotlin syntax. <strong>A human</strong> then needs to come in and fix the final n% of things that didn&rsquo;t convert properly. On hundreds of projects.</p>
+<p>This is insane. For any organization that is trying to build an automated system for updating and running migrations on hundreds (if not thousands) of projects, it is insane that our best option is use <code>grep</code> and cross our fingers. This is not the first migration we have done, and will not be our last, and the number of projects is only going to increase.</p>
+<h1 id="we-need-better">We Need Better</h1>
+<p>We are a professional community that naturally values structured data and automation. Using Gradle effectively and ironically breaks both these things. We need to do better. So what does that &ldquo;better&rdquo; look like?</p>
+<p>I actually think Maven got it 90% right. A coworker has a line I really like, that highlights some of what I believe Maven got right.</p>
+<blockquote>
+<p>Your builds are not special.</p>
+</blockquote>
+<p>100% this.</p>
+<p>This first thing I like about the Maven model is it discourages doing crazy things! Virtually all builds are just pointing at some source files, referencing some jars, and compiling. Maybe we push the end result somewhere when we&rsquo;re done. Why on earth are we using a general purpose programming language to declare what should almost always be copying and pasting from a template.</p>
+<p>Conversely, Maven discourage hacks and one-offs by limiting us to a purely declarative format. If we <em>really</em> need something special, we have a plugin framework where we can punch out of the stricter declarative world, and then we&rsquo;re just coding in Kotlin. Boom! Do all the crazy your heart desires.</p>
+<p>The other thing Maven got right is having a strict convention and format. This is really where the power lies for large organizations. It&rsquo;s a simple enough &ldquo;language&rdquo; that parsers are multiple and battle tested. How far do you have to reach in a given language to parse and understand XML? In any mainstream language you probably have multiple options. Not just regexes.</p>
+<p>This is exactly why Maven tooling has always been so out-of-the-box functional. The structure is well-defined, and there are fewer unexpected things because one-off hacks are discouraged. Gradle tooling on the other hand has always been near non-existent. IntelliJ supports Gradle and does a decent job, but it was a long road to get here. The support was incredibly buggy in early days, and even now seems a little flaky. Meanwhile, Maven tooling has just quietly worked this whole time.</p>
+<p>Of course what Maven didn&rsquo;t get right was XML. Maven was written at the time we all had <a href="https://en.wikipedia.org/wiki/SOAP">collective insanity</a> and thought everything should be XML. We&rsquo;re still kinda dealing with the hangover. XML has a lot of properties that are great for builds, but is a total eyesore.</p>
+<h1 id="my-dream-build-tool">My Dream Build Tool</h1>
+<p>I want something Maven like, but no XML. Right off the bat I don&rsquo;t think YAML is the right thing here, we want something simpiler and stricter. I&rsquo;m honestly not sure if a format like this exists, but I&rsquo;m shouting into the void and hoping a response comes back. If one doesn&rsquo;t exist maybe we need to <a href="https://xkcd.com/927/">make one</a> <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>.</p>
+<p>For my build tool and language I want something that has these properties:</p>
+<ol>
+<li>
+<p>Strict and static. Wouldn&rsquo;t it be great if IntelliJ yelled at us if we forgot a mandatory argument? Wouldn&rsquo;t it be great if IntelliJ told us an argument we were using on a plugin is deprecated? Wouldn&rsquo;t it be great if we could do a &ldquo;Find Usages&rdquo; on a dependency or plugin?</p>
+</li>
+<li>
+<p>Simple. Writing interpreters for this should be easy so automated tools can do their thing. Even better, the build tool itself provides an <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">AST</a>.</p>
+</li>
+<li>
+<p>An accessible and rich plugin and lifecycle API. Maybe one of the mistakes of Maven was it was too strict, and that led to Gradle. Let&rsquo;s try to meet in the middle.</p>
+</li>
+<li>
+<p>Support rich documentation. This is where XML is especially brutal. What if we could click on the argument of a plugin-in, and IntelliJ would bring us to well-formatted documentation. 😍.</p>
+</li>
+<li>
+<p>No meaningful whitespace please. We should have learned this was a bad idea a long time ago.</p>
+</li>
+<li>
+<p>First class fat-jars! No Kotlin or Java build tool has this as a first-class feature, and literally every JVM developer I know uses them<sup id="fnref:3"><a href="#fn:3" class="footnote-ref" role="doc-noteref">3</a></sup>.  The whole JVM world is just relying on some guys <a href="https://github.com/johnrengelman/shadow">side project</a>.</p>
+</li>
+</ol>
+<h1 id="final-thoughts">Final Thoughts</h1>
+<p>It&rsquo;s a big ask, but I think we need something new. When I look at the herculean efforts made towards the development of Gradle, I can&rsquo;t help but think it could be redirected to something smaller and simpler. This is such core part of our development workflow. I think it&rsquo;s worth the investment.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>The Kotlin DSL is pretty great, and definitely an improvement, but yet another example of Gradle throwing in yet another way to do things and further splintering the knowledge base. <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>I&rsquo;m sorry for asking for yet another serialization <a href="https://en.wikipedia.org/wiki/Comparison_of_data-serialization_formats#Syntax_comparison_of_human-readable_formats">format</a>, but I think this is a critical enough use-case that it would justify the investment <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:3" role="doc-endnote">
+<p>Except this <a href="https://beust.com/kobalt/home/index.html">one</a>! But I don&rsquo;t think it really took off. <a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+</article>
+
+        </main><footer id="footer">
+
+</footer>
+</body>
+</html>
