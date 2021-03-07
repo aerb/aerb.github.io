@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="https://aerb.github.io/favicon.ico">
+
+    <link rel="stylesheet" href="/css/style.min.css">
+
+    <title>Weirdware is Healthy</title>
+</head>
+<body><header id="banner">
+    <h2><a href="https://aerb.github.io/">computer says no</a></h2>
+    <nav>
+        <ul>
+
+        </ul>
+    </nav>
+</header>
+<main id="content">
+<article>
+    <header id="post-header">
+        <h1>Weirdware is Healthy</h1><time>March 7, 2021</time></header><p>There&rsquo;s a word I&rsquo;ve been hearing increasingly at work: weirdware. I can&rsquo;t find a formal definition anywhere, but it seems to roughly be a critique of in-house libraries and frameworks, where popular open-source variants exist. I think it&rsquo;s slightly related to &ldquo;<a href="https://en.wikipedia.org/wiki/Not_invented_here">Not Invented Here</a> (NIH) Syndrome&rdquo;, but less focused on the author&rsquo;s thought process during the creation of said weirdware.</p>
+<p>I partially agree with the weirdware and NIH critiques, but in net I believe they are bad for the industry and counter-productive.</p>
+<h1 id="does-not-invented-here-exist">Does &ldquo;Not Invented Here&rdquo; Exist?</h1>
+<p>First, in the case of NIH, I don&rsquo;t actually know if it exists? NIH appears to make the assumption that there are developers in a meeting somewhere saying, &ldquo;Yes, there are popular open-source solutions available, but those solutions aren&rsquo;t made at MegaCorp™, so we should make something internal&rdquo;. I don&rsquo;t know if this <em>actually</em> happens. There are lots of things that motivate making &ldquo;weird&rdquo; internal solutions, but I don&rsquo;t know if the motivation presented in NIH, is actually a common one <sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup>. I&rsquo;ll talk about what I think these actual motivations are below.</p>
+<h1 id="the-bad-of-weirdware">The Bad of Weirdware</h1>
+<p>That leaves us with &ldquo;weirdware&rdquo;. The weirdware critique seems less concerned with the authors state of mind in the decision-making process, and more with the end result: a bunch of under documented, strange internal tooling. I can sympathize with this.</p>
+<p>I believe one of the benefits of not going straight to a <a href="https://en.wikipedia.org/wiki/Big_Tech#FAANG">FAANG</a> company, right out of university, is it gives you different perspectives. I have worked at 4 vastly different companies in my career, and I&rsquo;ve seen <strong>a lot</strong> of weirdware. What I think the weirdware critique does not account for, is why those decisions were made at the time. I also think the weirdware critique does not consider what behaviors are encouraged and discouraged when the term is used.</p>
+<h1 id="weirdware-is-often-temporal">Weirdware is Often Temporal</h1>
+<p>One of my previous employers actually built an in-house package manager for sharing internal libraries. That&rsquo;s crazy right? Who on earth starts a company and thinks &ldquo;pip is great and all, but let&rsquo;s invest resources in building our own thing!&rdquo;. Here&rsquo;s who: someone who started a company before the concept of package managers was popularized. On tech timescales this company was ancient, they were still maintaining a Delphi codebase when I worked there. So at the time, they had an internal need, it was a polyglot company, and there were no standard package managers at the time. They had a problem, and they built a very simple internal tool to solve that problem.</p>
+<p>This is my fundamental frustration with the weirdware critique. It fails to account for the state of the world when decisions were made.</p>
+<p>Does it look crazy in 2021 for a company to role its own package manager? Sure, but meanwhile that package manager solved the problem, while the rest of the industry was still trying to figure out how the general solution should look. <sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup></p>
+<h1 id="the-implication-of-weirdware">The Implication of &ldquo;Weirdware&rdquo;</h1>
+<p>The second thing that really frustrates me with the weirdware critique is some underlying implications about <em>who</em> gets to build the &ldquo;right&rdquo; solutions, and who is building &ldquo;weirdware&rdquo;. I also think these implications encourage a very bad behaviour in developers.</p>
+<p>The implication is that only FAANG companies get to build the &ldquo;right&rdquo; solution. I hate this so much. Of all the brilliant things FAANG companies build, they also build a lot of real <a href="http://www.gwtproject.org/">flops</a>. They are bigger, and can make more bets, but I don&rsquo;t think their good-to-bad idea ratio is necessarily better. Additionally, FANNG companies build solutions for FANNG companies. Their problems are not always our problems, and it&rsquo;s a mistake to pretend otherwise. Should we set up a super distributed micro-service architecture to handle ultra-high <a href="https://en.wikipedia.org/wiki/Queries_per_second">QPS</a>, or should we stand up a small monolith to serve our current 100 customers?</p>
+<p>Another thing with FAANG solutions is they tend to target more general use-cases. Sometimes we don&rsquo;t have general use-cases. I have seen terrible hacks trying to use the &ldquo;right&rdquo; solution in a niche way, that the authors of the &ldquo;right&rdquo; solution never intended.  In my opinion these hacks are often far more confusing and buggy than building something simple and internal.</p>
+<h1 id="behaviors-encouraged-by-weirdware">Behaviors Encouraged by &ldquo;Weirdware&rdquo;</h1>
+<p>Lastly, I think the behaviors encouraged, by implying only FAANG companies get to build the &ldquo;right&rdquo; solution, are very bad behaviors. As developers, we&rsquo;re primarily tool builders. We build tools for customers to more easily achieve their goals. We should be encouraging our team members to build tools to solve their own problems too. By discouraging &ldquo;weirdware&rdquo; we are also discouraging creative thinking, and the instinct to solve our own problems.</p>
+<h1 id="final-thoughts">Final Thoughts</h1>
+<p>We should encourage developers to feel empowered, to build their own tools when the status quo is feeling frustrating or painful. Maybe you did write some weirdware, and the industry evolved, and now it seems like a strange solution. If that happens, I see no harm in migrating to the standard solution, <em>if it meets your needs</em>. I consider that a <strong>far</strong> smaller problem to have, than to wake up one day, and realize you&rsquo;re surrounded by developers that just want to wait for a FANNG company to solve all their problems.</p>
+<p>My vote?
+Let&rsquo;s get weird.</p>
+<section class="footnotes" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn:1" role="doc-endnote">
+<p>If that actually is something that has motivated you in the past, now would be a good time to do some self reflection. <a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+<li id="fn:2" role="doc-endnote">
+<p>Surprise! turns out we&rsquo;re <a href="/posts/we-need-better-than-gradle/">still figuring it out</a>. <a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+</article>
+
+        </main><footer id="footer">
+
+</footer>
+</body>
+</html>

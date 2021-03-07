@@ -6,9 +6,21 @@
     <description>Recent content on computer says no</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 28 Feb 2021 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 07 Mar 2021 00:00:00 +0000</lastBuildDate>
 
 	<atom:link href="https://aerb.github.io/index.xml" rel="self" type="application/rss+xml" />
+
+
+
+    <item>
+      <title>Weirdware is Healthy</title>
+      <link>https://aerb.github.io/posts/weirdware/</link>
+      <pubDate>Sun, 07 Mar 2021 00:00:00 +0000</pubDate>
+
+      <guid>https://aerb.github.io/posts/weirdware/</guid>
+      <description>There&amp;rsquo;s a word I&amp;rsquo;ve been hearing increasingly at work: weirdware. I can&amp;rsquo;t find a formal definition anywhere, but it seems to roughly be a critique of in-house libraries and frameworks, where popular open-source variants exist. I think it&amp;rsquo;s slightly related to &amp;ldquo;Not Invented Here (NIH) Syndrome&amp;rdquo;, but less focused on the author&amp;rsquo;s thought process during the creation of said weirdware.
+I partially agree with the weirdware and NIH critiques, but in net I believe they are bad for the industry and counter-productive.</description>
+    </item>
 
 
 
