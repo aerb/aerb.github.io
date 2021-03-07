@@ -25,7 +25,7 @@ This is my fundamental frustration with the weirdware critique. It fails to acco
 
 Does it look crazy in 2021 for a company to role its own package manager? Sure, but meanwhile that package manager solved the problem, while the rest of the industry was still trying to figure out how the general solution should look. [^gradle]
 
-[^gradle]: Surprise! turns out we're [still figuring it out](/posts/we-need-better-than-gradle/).
+[^gradle]: Surprise! Turns out we're [still figuring it out](/posts/we-need-better-than-gradle/).
 
 # The Implication of "Weirdware"
 The second thing that really frustrates me with the weirdware critique is some underlying implications about *who* gets to build the "right" solutions, and who is building "weirdware". I also think these implications encourage a very bad behaviour in developers.
@@ -38,7 +38,9 @@ Another thing with FAANG solutions is they tend to target more general use-cases
 Lastly, I think the behaviors encouraged, by implying only FAANG companies get to build the "right" solution, are very bad behaviors. As developers, we're primarily tool builders. We build tools for customers to more easily achieve their goals. We should be encouraging our team members to build tools to solve their own problems too. By discouraging "weirdware" we are also discouraging creative thinking, and the instinct to solve our own problems.
 
 # Final Thoughts 
-We should encourage developers to feel empowered, to build their own tools when the status quo is feeling frustrating or painful. Maybe you did write some weirdware, and the industry evolved, and now it seems like a strange solution. If that happens, I see no harm in migrating to the standard solution, *if it meets your needs*. I consider that a **far** smaller problem to have, than to wake up one day, and realize you're surrounded by developers that just want to wait for a FANNG company to solve all their problems.
+We should encourage developers to feel empowered, to build their own tools when the status quo is feeling frustrating or painful. Maybe you did write some weirdware, and the industry evolved, and now it seems like a strange solution. If that happens, I see no harm in migrating to the standard solution, *if it meets your needs*. 
+
+I consider that a **far** smaller problem to have, than to wake up one day, and realize you're surrounded by developers that just want to wait for a FANNG company to solve all their problems.
 
 My vote?
 Let's get weird.
